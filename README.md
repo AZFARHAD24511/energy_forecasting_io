@@ -1,118 +1,183 @@
-# Energy Forecasting + Input–Output Analysis
+# German Electricity Price Forecasting & Input–Output Analysis
 
-A reproducible starter repository for hourly electricity-price forecasting and a separate annual input–output (IO) scenario analysis.
+A data-driven research project combining **hourly German wholesale electricity price forecasting** with a separate **input–output (IO) economic analysis**. The forecasting component uses real hourly electricity-market data, time-dependent features, gradient boosting, and chronological backtesting.
 
-> **Data status:** The default run uses explicitly labelled synthetic demonstration data. It does not download real ENTSO-E, ERA5/Copernicus, or Eurostat FIGARO data. Replace the CSV inputs with real data before interpreting results economically.
+> **Current status:** The real-data forecasting pipeline and four-fold rolling backtest have been evaluated. The reported results represent rolling one-step-ahead forecasting, not a fully independent day-ahead market forecast.
 
-## Project structure
+## Project Overview
+
+The project investigates how historical electricity prices, intraday patterns, and lagged electricity-system variables can support hourly wholesale price forecasting in Germany.
+
+The repository also contains a separate input–output analysis framework. The hourly forecasting and annual IO components are distinct analytical tasks; their outputs should not be interpreted as a validated causal link between hourly electricity prices and annual macroeconomic effects.
+
+### Main objectives
+
+- Build an hourly electricity-price forecasting pipeline using real data.
+- Compare a machine-learning model against seasonal-naive benchmarks.
+- Evaluate performance using chronological, expanding-window backtesting.
+- Interpret predictive features using permutation importance.
+- Maintain a reproducible workflow for further electricity-market and IO research.
+
+## Data
+
+The real hourly dataset contains **59,735 observations and 15 columns**, covering approximately December 2019 to October 2026.
+
+The dataset includes:
+
+- Wholesale electricity price (`price_eur_mwh`)
+- Grid load and residual load
+- Wind, solar, hydro, and biomass variables
+- Conventional generation variables, including hard coal and natural gas
+- UTC timestamps and Berlin-local timestamps
+
+The forecasting pipeline uses UTC timestamps to maintain a consistent hourly timeline across daylight-saving-time transitions.
+
+**Data handling:** Raw and processed datasets are excluded from Git by default. Users should obtain the data from its original provider and follow the applicable terms of use. The repository should document the exact source URL and retrieval date when these details have been verified.
+
+## Methodology
+
+### Feature engineering
+
+The model uses 54 features, including:
+
+- Electricity-price lags: 1, 2, 3, 24, 48, 168, and 336 hours
+- Lagged electricity-system variables
+- Past-only rolling price statistics
+- Cyclical calendar features for hour of day, day of week, and month
+
+Price and exogenous variables are lagged, and rolling price statistics are shifted to avoid directly incorporating the target hour's price into its own predictors.
+
+### Models compared
+
+1. **HistGradientBoostingRegressor** — the machine-learning model.
+2. **Seasonal Naive (24h)** — uses the price from 24 hours earlier.
+3. **Seasonal Naive (168h)** — uses the price from 168 hours earlier.
+
+### Evaluation design
+
+An expanding-window rolling backtest evaluates four consecutive 30-day test periods. Each fold contains 720 hourly observations, giving **2,880 test observations across four folds**.
+
+The model is evaluated using:
+
+- **MAE (Mean Absolute Error):** average absolute forecasting error.
+- **RMSE (Root Mean Squared Error):** an error measure that penalizes large errors more heavily.
+- **Bias:** the signed average prediction error, subject to the sign convention used in the evaluation code.
+
+All reported errors are in euros per megawatt-hour (€/MWh).
+
+## Results
+
+### Four-fold rolling backtest
+
+| Model | Mean fold MAE (€/MWh) | Mean fold RMSE (€/MWh) |
+|---|---:|---:|
+| HistGradientBoostingRegressor | **9.231** | **16.025** |
+| Seasonal Naive (24h) | 33.525 | 52.361 |
+| Seasonal Naive (168h) | 39.273 | 60.281 |
+
+Across these four evaluation windows, the gradient-boosting model achieved lower MAE and RMSE than both seasonal-naive benchmarks.
+
+Its mean fold MAE was approximately **72.5% lower** than the 24-hour seasonal-naive benchmark. This is a relative reduction in MAE on these evaluation windows, not a guarantee of equivalent improvement in live trading or day-ahead forecasting.
+
+![Rolling backtest model comparison](docs/figures/rolling_backtest_mae.png)
+
+### Forecasting performance across time
+
+The four folds help assess whether model performance is stable across different periods rather than relying on one test window alone.
+
+The fourth fold, covering 25 August to 24 September 2026 (UTC), had an MAE of **11.468 €/MWh**. This was higher than the overall mean fold MAE, illustrating that forecasting accuracy varies over time.
+
+![Rolling backtest performance by fold](docs/figures/rolling_backtest_by_fold.png)
+
+### Feature importance
+
+Permutation importance was calculated on the fourth fold's test set, containing 720 hours. The baseline MAE for that fold was approximately 11.468 €/MWh.
+
+The most influential features were:
+
+| Feature | Mean permutation importance |
+|---|---:|
+| `price_lag_1` | 76.446 |
+| `hour_sin` | 6.122 |
+| `price_lag_2` | 3.390 |
+| `hour_cos` | 2.197 |
+| `solar_lag_1` | 2.041 |
+| `solar_lag_24` | 1.485 |
+
+Importance values represent the increase in MAE after a feature is permuted; they are not coefficients, percentages, or causal effects.
+
+![Permutation feature importance](docs/figures/permutation_importance_fold4.png)
+
+#### Interpretation
+
+**1. Strong short-term price persistence**
+
+The previous hour's price (`price_lag_1`) dominates the permutation-importance results. Recent prices therefore carry substantial predictive information in this evaluation setting.
+
+**2. Intraday patterns matter**
+
+The hour-of-day features (`hour_sin` and `hour_cos`) are the next most important group, indicating that the model makes substantial use of recurring hourly patterns.
+
+**3. Solar generation contributes predictive information**
+
+Lagged solar variables rank among the more important system features. This is consistent with the possibility that solar-generation patterns help explain price variation, but permutation importance alone cannot establish a causal relationship.
+
+**4. Correlated features require caution**
+
+When predictors contain overlapping information, permutation importance may redistribute or understate their individual contributions. These results should be interpreted as model-specific predictive importance, not as a ranking of causal drivers of electricity prices.
+
+## Limitations and next steps
+
+- **Rolling one-step-ahead evaluation:** Actual prices from earlier hours in each test period are available as lagged inputs for subsequent predictions. This is not equivalent to forecasting the next 24 hours without observing any prices during that horizon.
+- **Day-ahead forecasting:** A production-oriented day-ahead evaluation should reproduce the actual forecast-issuance time and restrict every input to information available at that time.
+- **Extreme prices:** Large price spikes are harder to predict accurately. Performance should also be reported separately for negative prices and high-price periods.
+- **Exogenous data availability:** Future load and generation values cannot be used unless they would have been available as forecasts at the time of prediction.
+- **Permutation importance:** Importance is model- and evaluation-period-specific and does not establish causality.
+- **Input–output analysis:** Annual IO results require separate assumptions and validation. They should not be presented as causal estimates derived directly from hourly price predictions.
+
+## Reproducibility
+
+The real-data workflow is implemented in Python. It includes data-validation, model-training, rolling-backtest, and feature-importance scripts.
+
+Use the project's documented Python environment and install the dependencies listed in `requirements.txt`.
+
+Example commands from the repository root in PowerShell:
+
+```powershell
+python .\scripts\validate_real_data.py
+python .\scripts\train_real_hourly_model.py
+python .\scripts\rolling_backtest_real_hourly.py
+python .\scripts\feature_importance_real_hourly.py
+```
+
+These commands assume that the scripts' configured input paths and dependencies are available. Review each script before running it, especially if your local data paths differ.
+
+## Repository structure
 
 ```text
 energy_forecasting_io/
-├── data/
-│   ├── raw/                 # User-provided source files (not committed)
-│   └── processed/           # Generated/cleaned files (not committed by default)
-├── models/                  # Trained model artifacts (not committed)
+├── data/                 # Raw and processed data; excluded by default
+├── docs/
+│   └── figures/          # README figures
+├── models/               # Model artifacts; excluded by default
 ├── notebooks/
+├── outputs/              # Generated forecasting outputs; excluded by default
 ├── reports/
-│   ├── figures/
-│   └── metrics.csv
 ├── scripts/
+│   ├── train_real_hourly_model.py
+│   ├── rolling_backtest_real_hourly.py
+│   ├── feature_importance_real_hourly.py
+│   ├── validate_real_data.py
 │   └── run_pipeline.py
-├── src/
-│   └── energy_io/
-│       ├── __init__.py
-│       ├── data_loader.py
-│       ├── forecasting.py
-│       ├── io_model.py
-│       └── visualize.py
+├── src/energy_io/
 ├── tests/
-│   └── test_io_model.py
-├── .gitignore
+├── README.md
 ├── pyproject.toml
-├── requirements.txt
-└── README.md
+└── requirements.txt
 ```
 
-## 1. Use an existing virtual environment (no automatic installation)
+## Conclusion
 
-The PowerShell helper `setup_project.ps1` checks `D:\projects\.venv\Scripts\python.exe` first and reports which core packages are available. It does **not** install packages and does not change any other project. If that environment is unavailable, it prints a clear message instead of creating another environment.
+The current results show that a gradient-boosting model can outperform simple seasonal-naive benchmarks in the evaluated German hourly electricity-price forecasting windows. Recent prices and intraday timing provide the strongest predictive signals in the feature-importance analysis.
 
-Run from PowerShell after extracting this project into `D:\projects\energy_forecasting_io`:
-
-```powershell
-Set-ExecutionPolicy -Scope Process Bypass
-.\setup_project.ps1
-```
-
-To inspect the interpreter and packages directly:
-
-```powershell
-& D:\projects\.venv\Scripts\python.exe -c "import sys; print(sys.executable); print(sys.version)"
-& D:\projects\.venv\Scripts\python.exe -m pip list
-```
-
-If the shared environment is missing a dependency, do not install blindly. Review the report first. Shared environments avoid repeated installations but can create dependency-version conflicts between projects.
-
-## 2. Run the demonstration pipeline
-
-```powershell
-& D:\projects\.venv\Scripts\python.exe .\scripts\run_pipeline.py
-```
-
-The script writes:
-- `reports/metrics.csv`
-- `reports/price_forecast.csv`
-- `reports/io_price_scenario.csv`
-- `data/processed/demo_hourly.csv`
-
-The forecaster uses a chronological train/validation/test split. The validation set is used for model choice; the test set is reserved for final evaluation. Lag features are constructed without shuffling time.
-
-The model uses XGBoost if installed, otherwise scikit-learn's `HistGradientBoostingRegressor`. No dependency is installed automatically.
-
-## 3. Supply real hourly data
-
-Place an hourly CSV at `data/raw/hourly_energy.csv` with a timestamp column and these columns:
-
-- `Temperature`
-- `WindSpeed`
-- `Load`
-- `Price`
-
-The timestamp column may be named `timestamp` or be a parseable first column. Units and timezone must be documented by the data provider. The current starter expects one row per hour and numeric values.
-
-## 4. Supply a real IO matrix
-
-The default IO matrix is a small synthetic example. To do a defensible analysis, load a square, consistently ordered technical-coefficients matrix `A` from a documented IO source (e.g. Eurostat FIGARO), and record:
-- country/region, year, currency and price basis;
-- sector concordance and ordering;
-- whether rows are inputs and columns are producing sectors;
-- treatment of imports, taxes, margins and electricity sector aggregation.
-
-The IO matrix is annual while the forecast is hourly. This project does **not** pretend that hourly price forecasts directly produce a validated annual macroeconomic effect. Scenario inputs and temporal aggregation need to be specified before interpreting results.
-
-## 5. Model interpretation
-
-The Leontief quantity model `x = (I - A)^(-1) y` describes gross output associated with a final-demand vector `y`. It is not automatically a price model.
-
-The separate price-cost scenario in `io_model.py` is an explicitly simplified, fixed-coefficient cost-propagation calculation. It assumes a defined upstream electricity-price shock and a stable technical-coefficients matrix. Treat results as scenario analysis, not causal estimates.
-
-## 6. Tests
-
-```powershell
-& D:\projects\.venv\Scripts\python.exe -m pytest
-```
-
-## 7. GitHub
-
-This folder is intended to be a **new, separate repository**. Do not reuse another project's remote. After creating a new empty GitHub repository, add its exact URL:
-
-```powershell
-git init
-git add .
-git commit -m "Initial energy forecasting and IO scaffold"
-git branch -M main
-git remote add origin <YOUR_NEW_REPOSITORY_URL>
-git push -u origin main
-```
-
-Never commit `.venv`, API keys, tokens, large raw datasets, or private source files.
+The next research step is to evaluate a realistic day-ahead forecasting setup, improve the treatment of extreme prices, and document data provenance and forecast-time information constraints. The separate IO framework can then be developed and validated on its own terms.
