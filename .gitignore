@@ -27,3 +27,9 @@ reports/*.csv
 
 # Notebooks checkpoints
 .ipynb_checkpoints/
+# FIGARO source data and downloaded archives
+/data/FIGARO database/
+/data/*.zip
+
+# Generated model outputs - publish selected results separately if needed
+/outputs/
