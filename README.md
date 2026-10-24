@@ -436,6 +436,34 @@ The real-data experiments show that `HistGradientBoostingRegressor` substantiall
 
 The most important next step is to test the model under a realistic day-ahead information constraint. The separate IO framework can then be further developed and validated for clearly specified economic scenarios.
 
+
+## Data Sources and References
+
+### Official Data Sources
+
+1. **Federal Statistical Office of Germany (Destatis).** GENESIS-Online database — Input-Output Accounts (Statistics Code 81511).
+   - Database: https://www-genesis.destatis.de/datenbank/online/statistics
+   - Input-Output Table (Revision 2024), Domestic Production at Basic Prices: https://genesis.destatis.de/datenbank/online/statistic/81511/table/81511-0005
+   - API documentation and endpoint information: https://www-genesis.destatis.de/genesisWS/rest/2020/data/tablefile
+
+### Methodological References
+
+2. **Dietzenbacher, E., & Los, B. (1998).** Structural decomposition techniques: Sense and sensitivity. *Economic Systems Research, 10*(4), 307–324.
+   - https://doi.org/10.1080/09535319800000023
+
+3. **Miller, R. E., & Blair, P. D. (2009).** *Input-Output Analysis: Foundations and Extensions* (2nd ed.). Cambridge University Press.
+
+4. **Rose, A., & Casler, S. (1996).** Input-output structural decomposition analysis: A critical appraisal. *Economic Systems Research, 8*(1), 33–62.
+   - https://doi.org/10.1080/09535319600000003
+
+### Data Access and Usage Notes
+
+- The official source for the German Input-Output Tables is Destatis's GENESIS-Online database.
+- Access to the web service may require a personal API token.
+- The project uses downloaded table revisions for data processing and structural decomposition analysis.
+- Please consult Destatis for the original data, metadata, revisions, and applicable terms of use.
+
+
 ---
 
 **Research note:** The reported metrics are historical evaluation results, not a guarantee of future performance. Predictive feature importance does not establish causality, and the hourly forecasting results do not by themselves validate annual macroeconomic effects.
