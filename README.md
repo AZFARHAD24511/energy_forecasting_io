@@ -259,22 +259,30 @@ The chart compares actual prices with model predictions over the last seven days
 
 The separate IO component provides a framework for analysing production interdependencies and simplified price-cost propagation.
 
-### Leontief quantity model
 
-The standard Leontief quantity model is:
 
-\[
-\mathbf{x}=(\mathbf{I}-\mathbf{A})^{-1}\mathbf{y}
-\]
+
+### Leontief Quantity Model
+
+The standard Leontief quantity model estimates the gross output required to satisfy final demand throughout an economy.
+
+The model is expressed as:
+
+$$
+\mathbf{x} = (\mathbf{I} - \mathbf{A})^{-1} \mathbf{y}
+$$
 
 where:
 
-- (\mathbf{x}) is the gross-output vector.
-- (\mathbf{A}) is the technical-coefficients matrix.
-- (\mathbf{I}) is the identity matrix.
-- (\mathbf{y}) is the final-demand vector.
+- $\mathbf{x}$ is the gross-output vector.
+- $\mathbf{A}$ is the technical-coefficients matrix.
+- $\mathbf{I}$ is the identity matrix.
+- $\mathbf{y}$ is the final-demand vector.
+- $(\mathbf{I} - \mathbf{A})^{-1}$ is the Leontief inverse, which captures direct and indirect production requirements.
 
-The model describes gross output associated with a specified final-demand vector under its input-output assumptions.
+In economic terms, the model estimates how much each sector must produce to meet final demand, including the intermediate inputs required throughout the production network.
+
+
 
 ### Price-cost scenario analysis
 
