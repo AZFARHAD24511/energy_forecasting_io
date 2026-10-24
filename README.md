@@ -284,40 +284,38 @@ It should be interpreted as a scenario analysis rather than a causal estimate. T
 
 ## Project Structure
 
-```text
 energy_forecasting_io/
-â”œâ”€â”€ data/
-â”‚   â”œâ”€â”€ raw/                       # Raw input data; excluded by default
-â”‚   â””â”€â”€ processed/                 # Processed data; excluded by default
-â”œâ”€â”€ docs/
-â”‚   â””â”€â”€ figures/                   # Figures embedded in README
-â”œâ”€â”€ models/                        # Model artifacts; excluded by default
-â”œâ”€â”€ notebooks/
-â”œâ”€â”€ outputs/                       # Generated forecasting outputs; excluded by default
-â”œâ”€â”€ reports/
-â”‚   â””â”€â”€ figures/                   # Existing project figures
-â”œâ”€â”€ scripts/
-â”‚   â”œâ”€â”€ run_pipeline.py            # Demonstration pipeline
-â”‚   â”œâ”€â”€ validate_real_data.py      # Real-data validation
-â”‚   â”œâ”€â”€ train_real_hourly_model.py # Real hourly model training
-â”‚   â”œâ”€â”€ rolling_backtest_real_hourly.py
-â”‚   â”œâ”€â”€ feature_importance_real_hourly.py
-â”‚   â””â”€â”€ make_readme_figures.py     # README chart generation
-â”œâ”€â”€ src/
-â”‚   â””â”€â”€ energy_io/
-â”‚       â”œâ”€â”€ __init__.py
-â”‚       â”œâ”€â”€ data_loader.py
-â”‚       â”œâ”€â”€ forecasting.py
-â”‚       â”œâ”€â”€ io_model.py
-â”‚       â””â”€â”€ visualize.py
-â”œâ”€â”€ tests/
-â”‚   â””â”€â”€ test_io_model.py
-â”œâ”€â”€ .gitignore
-â”œâ”€â”€ pyproject.toml
-â”œâ”€â”€ requirements.txt
-â”œâ”€â”€ setup_project.ps1
-â””â”€â”€ README.md
-```
+├── data/
+│   ├── raw/                         # Raw input data (excluded from Git)
+│   └── processed/                   # Processed data (excluded from Git)
+├── docs/
+│   └── figures/                     # README forecasting charts
+├── models/                           # Model artifacts
+├── notebooks/                        # Jupyter notebooks
+├── outputs/                          # Forecasting outputs
+├── reports/
+│   └── figures/                     # Project figures
+├── scripts/
+│   ├── run_pipeline.py              # Demonstration pipeline
+│   ├── validate_real_data.py        # Real-data validation
+│   ├── train_real_hourly_model.py   # Hourly model training
+│   ├── rolling_backtest_real_hourly.py
+│   ├── feature_importance_real_hourly.py
+│   └── make_readme_figures.py       # Generate README charts
+├── src/
+│   └── energy_io/
+│       ├── __init__.py
+│       ├── data_loader.py
+│       ├── forecasting.py
+│       ├── io_model.py
+│       └── visualize.py
+├── tests/
+│   └── test_io_model.py
+├── .gitignore
+├── pyproject.toml
+├── requirements.txt
+├── setup_project.ps1
+└── README.md
 
 ## Installation and Setup
 
