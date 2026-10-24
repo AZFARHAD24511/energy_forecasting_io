@@ -283,7 +283,7 @@ The project's separate price-cost scenario is a simplified fixed-coefficient cos
 It should be interpreted as a scenario analysis rather than a causal estimate. The annual IO model and hourly electricity-price forecasting model operate at different temporal and analytical scales; linking them requires explicit assumptions and additional validation.
 
 ## Project Structure
-
+```text
 energy_forecasting_io/
 ├── data/
 │   ├── raw/                         # Raw input data (excluded from Git)
@@ -316,6 +316,7 @@ energy_forecasting_io/
 ├── requirements.txt
 ├── setup_project.ps1
 └── README.md
+```
 
 ## Installation and Setup
 
