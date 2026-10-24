@@ -1,10 +1,10 @@
-﻿# German Electricity Price Forecasting & Input-Output Analysis
+# German Electricity Price Forecasting & Input-Output Analysis
 
 A reproducible Python research project combining **hourly German wholesale electricity price forecasting** with a separate **input-output (IO) economic analysis framework**.
 
-The project uses real hourly electricity-market data to evaluate machine-learning forecasting against seasonal-naive benchmarks. It also provides a foundation for studying the relationship between energy markets, production structures, and economic scenarios through inputâ€“output methods.
+The project uses real hourly electricity-market data to evaluate machine-learning forecasting against seasonal-naive benchmarks. It also provides a foundation for studying the relationship between energy markets, production structures, and economic scenarios through input-output methods.
 
-> **Project status:** The real-data hourly forecasting pipeline has been evaluated using an expanding-window rolling backtest. The current results represent rolling one-step-ahead forecasting, not a fully independent day-ahead forecast. The inputâ€“output component is a separate analytical framework and should not be interpreted as a validated causal extension of the hourly forecasting results.
+> **Project status:** The real-data hourly forecasting pipeline has been evaluated using an expanding-window rolling backtest. The current results represent rolling one-step-ahead forecasting, not a fully independent day-ahead forecast. The input-output component is a separate analytical framework and should not be interpreted as a validated causal extension of the hourly forecasting results.
 
 ## Table of Contents
 
@@ -15,7 +15,7 @@ The project uses real hourly electricity-market data to evaluate machine-learnin
 - [Model Evaluation](#model-evaluation)
 - [Feature Importance and Interpretation](#feature-importance-and-interpretation)
 - [Visual Results](#visual-results)
-- [Inputâ€“Output Analysis](#input--output-analysis)
+- [Input-Output Analysis](#input-output-analysis)
 - [Project Structure](#project-structure)
 - [Installation and Setup](#installation-and-setup)
 - [Running the Pipeline](#running-the-pipeline)
@@ -39,7 +39,7 @@ The forecasting component:
 - Evaluates the models using chronological rolling backtesting.
 - Uses permutation importance to investigate which features contribute most to predictive performance.
 
-### 2. Inputâ€“output economic analysis
+### 2. Input–output economic analysis
 
 The IO component provides tools for analysing production interdependencies and simplified cost-propagation scenarios.
 
@@ -51,8 +51,8 @@ The real-data forecasting model outperformed both seasonal-naive benchmarks acro
 
 | Evaluation metric | Gradient Boosting | Seasonal Naive (24h) | Seasonal Naive (168h) |
 |---|---:|---:|---:|
-| Mean fold MAE (â‚¬/MWh) | **9.231** | 33.525 | 39.273 |
-| Mean fold RMSE (â‚¬/MWh) | **16.025** | 52.361 | 60.281 |
+| Mean fold MAE (€/MWh) | **9.231** | 33.525 | 39.273 |
+| Mean fold RMSE (€/MWh) | **16.025** | 52.361 | 60.281 |
 
 The model achieved approximately **72.5% lower mean fold MAE** than the 24-hour seasonal-naive benchmark across the evaluated windows.
 
@@ -64,8 +64,8 @@ A separate final holdout evaluation produced the following results:
 
 | Metric | Gradient Boosting | Seasonal Naive (24h) | Seasonal Naive (168h) |
 |---|---:|---:|---:|
-| MAE (â‚¬/MWh) | **10.462** | 44.144 | 65.101 |
-| RMSE (â‚¬/MWh) | **15.371** | 57.396 | 82.341 |
+| MAE (€/MWh) | **10.462** | 44.144 | 65.101 |
+| RMSE (€/MWh) | **15.371** | 57.396 | 82.341 |
 
 The final holdout contains 721 observations used in the common comparison. The rolling backtest covers four different 30-day periods and 2,880 test hours in total. These evaluations are reported separately because they use different test windows.
 
@@ -135,9 +135,9 @@ This prevents direct use of the target hour's observed values. However, the eval
 
 Three forecasting approaches are compared:
 
-1. **HistGradientBoostingRegressor** â€” a tree-based machine-learning model capable of learning nonlinear relationships.
-2. **Seasonal Naive (24h)** â€” predicts the price using the observation from 24 hours earlier.
-3. **Seasonal Naive (168h)** â€” predicts the price using the observation from 168 hours earlier.
+1. **HistGradientBoostingRegressor** — a tree-based machine-learning model capable of learning nonlinear relationships.
+2. **Seasonal Naive (24h)** — predicts the price using the observation from 24 hours earlier.
+3. **Seasonal Naive (168h)** — predicts the price using the observation from 168 hours earlier.
 
 The seasonal-naive models provide transparent reference points against which the additional value of machine learning can be assessed.
 
@@ -147,12 +147,12 @@ The seasonal-naive models provide transparent reference points against which the
 
 The rolling backtest uses four consecutive 30-day test folds, each containing 720 hourly observations.
 
-| Fold | Test period (UTC) | Gradient Boosting MAE (â‚¬/MWh) |
+| Fold | Test period (UTC) | Gradient Boosting MAE (€/MWh) |
 |---|---|---:|
-| 1 | 27 May â€“ 26 June 2026 | 9.131 |
-| 2 | 26 June â€“ 26 July 2026 | 8.027 |
-| 3 | 26 July â€“ 25 August 2026 | 8.299 |
-| 4 | 25 August â€“ 24 September 2026 | 11.468 |
+| 1 | 27 May – 26 June 2026 | 9.131 |
+| 2 | 26 June – 26 July 2026 | 8.027 |
+| 3 | 26 July – 25 August 2026 | 8.299 |
+| 4 | 25 August – 24 September 2026 | 11.468 |
 
 The training window expands before each fold. Predictions are evaluated chronologically rather than using a random train-test split.
 
@@ -172,7 +172,7 @@ RMSE gives greater weight to large errors. A substantial gap between RMSE and MA
 
 Bias measures the signed average prediction error. Its interpretation depends on the sign convention used by the evaluation implementation.
 
-All price-error metrics are reported in euros per megawatt-hour (â‚¬/MWh).
+All price-error metrics are reported in euros per megawatt-hour (€/MWh).
 
 ### Important evaluation qualification
 
@@ -184,7 +184,7 @@ A production-oriented day-ahead evaluation should reproduce the actual forecast 
 
 ## Feature Importance and Interpretation
 
-Permutation importance was calculated on Fold 4 using its 720 test observations. The baseline MAE was approximately **11.468 â‚¬/MWh**.
+Permutation importance was calculated on Fold 4 using its 720 test observations. The baseline MAE was approximately **11.468 €/MWh**.
 
 The table shows the leading features and their mean permutation importance.
 
@@ -255,7 +255,7 @@ The chart compares actual prices with model predictions over the last seven days
 
 > **Figure generation:** The chart-generation script is `scripts/make_readme_figures.py`. Run it after the relevant output CSV files have been generated.
 
-## Inputâ€“Output Analysis
+## Input-Output Analysis
 
 The separate IO component provides a framework for analysing production interdependencies and simplified price-cost propagation.
 
@@ -274,7 +274,7 @@ where:
 - (\mathbf{I}) is the identity matrix.
 - (\mathbf{y}) is the final-demand vector.
 
-The model describes gross output associated with a specified final-demand vector under its inputâ€“output assumptions.
+The model describes gross output associated with a specified final-demand vector under its input-output assumptions.
 
 ### Price-cost scenario analysis
 
@@ -431,9 +431,3 @@ The most important next step is to test the model under a realistic day-ahead in
 ---
 
 **Research note:** The reported metrics are historical evaluation results, not a guarantee of future performance. Predictive feature importance does not establish causality, and the hourly forecasting results do not by themselves validate annual macroeconomic effects.
-
-
-
-
-
-
