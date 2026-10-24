@@ -1,6 +1,6 @@
 ﻿# German Electricity Price Forecasting & Inputâ€“Output Analysis
 
-A reproducible Python research project combining **hourly German wholesale electricity price forecasting** with a separate **inputâ€“output (IO) economic analysis framework**.
+A reproducible Python research project combining **hourly German wholesale electricity price forecasting** with a separate **input-output (IO) economic analysis framework**.
 
 The project uses real hourly electricity-market data to evaluate machine-learning forecasting against seasonal-naive benchmarks. It also provides a foundation for studying the relationship between energy markets, production structures, and economic scenarios through inputâ€“output methods.
 
