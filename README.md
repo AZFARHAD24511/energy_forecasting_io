@@ -1,4 +1,4 @@
-﻿# German Electricity Price Forecasting & Inputâ€“Output Analysis
+﻿# German Electricity Price Forecasting & Input-Output Analysis
 
 A reproducible Python research project combining **hourly German wholesale electricity price forecasting** with a separate **input-output (IO) economic analysis framework**.
 
